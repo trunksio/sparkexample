@@ -26,6 +26,7 @@ public class ocrFromPdf {
     public static void main(String[] args) throws IOException {
         SparkConf sparkConf = new SparkConf()
                 .setAppName("Example Spark App");
+	sparkConf.setExecutorEnv("TESSDATA_PREFIX","/data/javacpp-presets/tesseract/cppbuild/linux-x86_64/share/tessdata");
         JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
         JavaPairRDD<String, PortableDataStream> pdfRDD = sparkContext.binaryFiles(args[1]);
         JavaPairRDD<String, String> xText = pdfRDD.mapValues(new ExtractText());
@@ -54,6 +55,7 @@ class ExtractText implements Function<PortableDataStream, String>{
 
            int pageNumber = 1;
            for (PDPage page : list) {
+		System.out.println("Processing page: "+ pageNumber);
                BytePointer outText;
                BufferedImage pdfImage = page.convertToImage();
                ByteArrayOutputStream baos = new ByteArrayOutputStream();
